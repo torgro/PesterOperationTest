@@ -82,8 +82,25 @@ Describe "FIM Validation" {
         $FolderName = "D:\FIMsync\RunScripts\"
         It "$FolderName$fileName should exists" {
             Test-Path -Path "$$FolderName$fileName" | Should Be $true
+        }                
+    }
+    
+    Context "Configuration files" {
+        $fileName = "miiserver.exe.config"
+        $path = "$env:ProgramFiles\Microsoft Forefront Identity Manager\2010\Synchronization Service\Bin\"
+        $ConfigFile = Get-FileHash -Path "$path$fileName" -ErrorAction SilentlyContinue
+        
+        It "$fileName should not have changed" {
+            $ConfigFile.Hash | Should Be "438881ED9AF754E25EA0F2D3222CD44A82FACEDECC7DD6FAAD6D77EF847E2EDF"
         }
                 
+        $fileName = "Microsoft.ResourceManagement.Service.exe.config"
+        $path = "$env:ProgramFiles\Microsoft Forefront Identity Manager\2010\Service\"
+        $ConfigFile = Get-FileHash -Path "$path$fileName" -ErrorAction SilentlyContinue
+        
+        It "$fileName should not have changed" {
+            $ConfigFile.Hash | Should Be "70C48FD1DB848A019A2711C35F2219A011BE8B14B1DED99D5C1A81AA5997433A"
+        }
     }
 
     Context "Services running" {
