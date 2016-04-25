@@ -122,6 +122,7 @@ Describe "FIM Validation" {
     }
 
     Context "Scheduled tasks" {
+        
         $taskName = "FIMSync - DayJob"
         $task = Get-ScheduledTask -TaskName "$taskName" -ErrorAction SilentlyContinue
 
@@ -180,6 +181,41 @@ Describe "FIM Validation" {
         $RunAs = "Domain\FIMRunScriptSchedule"
         It "$taskName should run as $RunAs" {
             $task.Principal.UserId | Should Be "$RunAs"
+        }
+    }
+    
+    Context "Configuration files" {
+        $fileName = "miiserver.exe.config"
+        $path = "$env:ProgramFiles\Microsoft Forefront Identity Manager\2010\Synchronization Service\Bin\"
+        $ConfigFile = Get-FileHash -Path "$path$fileName" -ErrorAction SilentlyContinue
+        
+        It "$fileName should not have changed" {
+            $ConfigFile.Hash | Should Be "D4B60AF6D525A4CF4132C39D2291C282220ED9CE30018063868848CA2D3D64AC"
+        }
+                
+        $fileName = "Microsoft.ResourceManagement.Service.exe.config"
+        $path = "$env:ProgramFiles\Microsoft Forefront Identity Manager\2010\Service\"
+        $ConfigFile = Get-FileHash -Path "$path$fileName" -ErrorAction SilentlyContinue
+        
+        It "$fileName should not have changed" {
+            $ConfigFile.Hash | Should Be "1B028C61DF4AD100F606562EAF08E187BD5FE19CDDDBA1B217418B528D3A9147"
+        }
+    }
+    
+    Context "Portal Server" {         
+        $ServiceName = "IISADMIN"
+        $CimService = Get-CimInstance -ClassName win32_Service -Filter "Name like '$ServiceName'"
+
+        It "Service $ServiceName should be running" {
+            $CimService.State | Should Be "Running"
+        }
+
+        It "Service $ServiceName should start automatically" {
+            $CimService.StartMode | Should Be "Auto"
+        }
+
+        It "Service $ServiceName should be running as LocalSystem" {
+            $CimService.StartName | Should Be "LocalSystem"
         }
     }
 }
