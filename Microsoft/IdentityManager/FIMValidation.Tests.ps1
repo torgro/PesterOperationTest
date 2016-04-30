@@ -1,3 +1,33 @@
+#Requires -RunAsAdministrator
+<#
+.Synopsis
+   Operation validation tests (Pester) for Microsoft Identity Manager (MIM) also know as Forefront Identity Manager (FIM)
+.DESCRIPTION
+   The tests needs adminitrative privileges to run. It requires the powershell Pester module. Also your domain controllers
+   need to be configured with Powershell remoting if you want to run the PCNS tests. The account executing these tests
+   needs Powershell remoting privileges and local administrative privileges on the Identity Manager server. 
+.EXAMPLE
+   Invoke-Pester
+   
+   This will invoke the tests if it is located in the current folder or a subfolder it the test file follow the namingstandard of Pester. The FileName should contain Tests.ps1
+.EXAMPLE
+   Invoke-Pester -Script .\tests\IdentityManager.Tests.ps1
+   
+   This command will run the Pester testfile in the current working directory's subfolder 'tests'.
+.EXAMPLE
+   $TestResult = Invoke-Pester -PassThru
+   
+   This will run all tests recursivly and save the output in the variable Testresult
+.OUTPUTS
+   It outputs to the console or to standard output if PassThru parameter is used
+.NOTES
+   Use at your own Risk!
+.COMPONENT
+   Operation validation tests
+.FUNCTIONALITY
+   Operation validation tests
+#>
+
 Describe "FIM Validation" {
     Context "Powershell modules" {
         It "Should have PowerFIM module installed" {
@@ -217,5 +247,71 @@ Describe "FIM Validation" {
         It "Service $ServiceName should be running as LocalSystem" {
             $CimService.StartName | Should Be "LocalSystem"
         }
+    }
+    
+    Context "Password Synchronization service for Domain Controllers" {
+        
+        # This test should fail if you introduce a new domain controller and do not install/configure PCNS on it!
+        
+        $DomainControllers = Get-ADDomainController -Filter * -ErrorAction Stop | Select-Object -ExpandProperty Name
+        $ServiceName = "PCNSSVC"
+
+        foreach($domainController in $DomainControllers)
+        {            
+            $ServiceName = "PCNSSVC"
+            $CimService = Get-CimInstance -ClassName win32_Service -Filter "Name = '$ServiceName'" -ComputerName "$domainController" -ErrorAction SilentlyContinue
+
+            if(-not $CimService)
+            {
+                #fallback to CIM via DCOM
+                $sessionOption = New-CimSessionOption -Protocol Dcom
+                $Session = New-CimSession -ComputerName $domainController -SessionOption $sessionOption
+                $CimService = Get-CimInstance -cimSession $Session -ClassName win32_Service -Filter "Name = '$ServiceName'" -ErrorAction SilentlyContinue
+                Remove-CimSession -CimSession $Session -ErrorAction SilentlyContinue
+            }
+
+            It "[$domainController] - Service $ServiceName should not be null" {
+                $CimService | Should not be $null
+            }
+
+            if($CimService)
+            {
+                It "[$domainController] - Service $ServiceName should be running" {
+                    $CimService.State | Should Be "Running"
+                }
+
+                It "[$domainController] - Service $ServiceName should start automatically" {
+                    $CimService.StartMode | Should Be "Auto"
+                }
+
+                It "[$domainController] - Service $ServiceName should be running as LocalSystem" {
+                    $CimService.StartName | Should Be "LocalSystem"
+                }
+            }
+
+            $CimService = $null
+        }
+    }
+    
+    Context "Password Synchronization AD configuration" {
+        Import-Module -Name ActiveDirectory -ErrorAction Stop
+        
+        $IdentityServerFQDN = "imserver.domain.com"
+
+        $pcns = Get-ADObject -Filter { ObjectClass -like "MS-MIIS-PCNS-Target" } -Properties *
+
+        It "Target should not be disabled" {
+            $pcns.'mS-MIIS-PCNS-TargetDisabled' | Should be $false
+        }
+
+        It "Target server should be '$IdentityServerFQDN" {
+            $pcns.'mS-MIIS-PCNS-TargetServer' | Should be "$IdentityServerFQDN"
+        }
+
+        It "SPN should be 'PCNSCLNT/$IdentityServerFQDN'" {
+            $pcns.'mS-MIIS-PCNS-TargetSPN' | Should be "PCNSCLNT/$IdentityServerFQDN"
+        }
+
+        Remove-Module ActiveDirectory -ErrorAction SilentlyContinue
     }
 }
