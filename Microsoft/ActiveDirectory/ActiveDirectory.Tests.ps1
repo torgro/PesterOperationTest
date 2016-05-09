@@ -76,16 +76,16 @@ $ExpectedConfiguration = @{
 Describe "Active Directory Operational Validation" {
     Context "Forest configuration" {
         it "Forest FQDN should be $($ExpectedConfiguration.Forest.FQDN)" {
-            $ExpectedConfiguration.Forest.FQDN | Should be $ADSnapshot.ForestInformation.RootDomain
+            $ADSnapshot.ForestInformation.RootDomain | Should be $ExpectedConfiguration.Forest.FQDN
         }
         it "ForestMode should be $($ExpectedConfiguration.Forest.ForestMode)" {
-            $ExpectedConfiguration.Forest.ForestMode | Should be $ADSnapshot.ForestInformation.ForestMode.ToString()
+            $ADSnapshot.ForestInformation.ForestMode.ToString() | Should be $ExpectedConfiguration.Forest.ForestMode
         }
         it "SchemaMaster should be $($ExpectedConfiguration.Forest.SchemaMaster)" {
-            $ExpectedConfiguration.Forest.SchemaMaster | Should be $ADSnapshot.ForestInformation.SchemaMaster
+            $ADSnapshot.ForestInformation.SchemaMaster | Should be $ExpectedConfiguration.Forest.SchemaMaster
         }
         it "DomainNamingMaster should be $($ExpectedConfiguration.Forest.DomainNamingMaster)"{
-            $ExpectedConfiguration.Forest.DomainNamingMaster | Should be $ADSnapshot.ForestInformation.DomainNamingMaster
+            $ADSnapshot.ForestInformation.DomainNamingMaster | Should be $ExpectedConfiguration.Forest.DomainNamingMaster
         }
     }
     
