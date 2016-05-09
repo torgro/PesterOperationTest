@@ -90,31 +90,14 @@ Describe "Active Directory Operational Validation" {
     }
     
     Context 'Verifying GlobalCatalogs' {        
-        foreach($GlobalCatalogServer in $ADSnapshot.Forest.GlobalCatalogs)
-        {
-            it "Server GlobalCatalogServer should be GlobalCatalog" {
-                $ExpectedConfiguration.ForestInformation.GlobalCatalogs.Contains($GlobalCatalogServer) | Should be $true
-            }
-        }                    
+        it "Global Catalog Servers list should match." {
+            Compare-Object $ExpectedConfiguration.Forest.GlobalCatalogs $ADSnapshot.ForestInformation.GlobalCatalogs | Should BeNullOrEmpty
+        }                   
     }
     
     Context "Verifying Domain Configuration" {
-        it "Total Domain Controllers $($ADConfiguration.Domain.DomainControllers.Count)" {
-            $ExpectedConfiguration.Domain.DomainControllers.Count | Should be @($ADSnapshot.DomainControllers).Count
-        }
-
-        $ADConfiguration.Domain.DomainControllers | 
-        ForEach-Object{
-            it "DomainController $($_) exists" {
-                $SavedADReport.DomainControllers.Name.Contains($_) | Should be $true
-            }
-        }
-        
-        foreach($DomainController in $ADSnapshot.Domain.DomainControllers)
-        {
-            it "DomainController $($_) should exists" {
-                $ExpectedConfiguration.DomainControllers.Name.Contains($DomainController) | Should be $true
-            }
+        it "List of domain controllers in the domain should be the same as the configuration list." {
+            Compare-Object $ExpectedConfiguration.Domain.DomainControllers $ADSnapshot.DomainControllers.Name | Should BeNullOrEmpty
         }
         
         it "DNSRoot should be $($ExpectedConfiguration.Domain.DNSRoot)" {
