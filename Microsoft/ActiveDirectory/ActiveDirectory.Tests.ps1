@@ -126,25 +126,25 @@ Describe "Active Directory Operational Validation" {
     #FIXME BELOW:
     Context 'Verifying Default Password Policy'{
         it 'ComplexityEnabled'{
-            $ADConfiguration.PasswordPolicy.ComplexityEnabled | Should be $SavedADReport.DefaultPassWordPoLicy.ComplexityEnabled
+            $ADConfiguration.PasswordPolicy.ComplexityEnabled | Should be $ADSnapshot.DefaultPassWordPoLicy.ComplexityEnabled
         }
         it 'Password History count'{
-            $ADConfiguration.PasswordPolicy.PasswordHistoryCount | Should be $SavedADReport.DefaultPassWordPoLicy.PasswordHistoryCount
+            $ADConfiguration.PasswordPolicy.PasswordHistoryCount | Should be $ADSnapshot.DefaultPassWordPoLicy.PasswordHistoryCount
         }
         it "Lockout Threshold equals $($ADConfiguration.PasswordPolicy.LockoutThreshold)"{
-            $ADConfiguration.PasswordPolicy.LockoutThreshold | Should be $SavedADReport.DefaultPassWordPoLicy.LockoutThreshold
+            $ADConfiguration.PasswordPolicy.LockoutThreshold | Should be $ADSnapshot.DefaultPassWordPoLicy.LockoutThreshold
         }
         it "Lockout duration equals $($ADConfiguration.PasswordPolicy.LockoutDuration)"{
-            $ADConfiguration.PasswordPolicy.LockoutDuration | Should be $SavedADReport.DefaultPassWordPoLicy.LockoutDuration.ToString()
+            $ADConfiguration.PasswordPolicy.LockoutDuration | Should be $ADSnapshot.DefaultPassWordPoLicy.LockoutDuration.ToString()
         }
         it "Lockout observation window equals $($ADConfiguration.PasswordPolicy.LockoutObservationWindow)"{
-            $ADConfiguration.PasswordPolicy.LockoutObservationWindow | Should be $SavedADReport.DefaultPassWordPoLicy.LockoutObservationWindow.ToString()
+            $ADConfiguration.PasswordPolicy.LockoutObservationWindow | Should be $ADSnapshot.DefaultPassWordPoLicy.LockoutObservationWindow.ToString()
         }
         it "Min password age equals $($ADConfiguration.PasswordPolicy.MinPasswordAge)"{
-            $ADConfiguration.PasswordPolicy.MinPasswordAge | Should be $SavedADReport.DefaultPassWordPoLicy.MinPasswordAge.ToString()
+            $ADConfiguration.PasswordPolicy.MinPasswordAge | Should be $ADSnapshot.DefaultPassWordPoLicy.MinPasswordAge.ToString()
         }
         it "Max password age equals $($ADConfiguration.PasswordPolicy.MaxPasswordAge)"{
-            $ADConfiguration.PasswordPolicy.MaxPasswordAge | Should be $SavedADReport.DefaultPassWordPoLicy.MaxPasswordAge.ToString()
+            $ADConfiguration.PasswordPolicy.MaxPasswordAge | Should be $ADSnapshot.DefaultPassWordPoLicy.MaxPasswordAge.ToString()
         }
     }
 
@@ -152,7 +152,7 @@ Describe "Active Directory Operational Validation" {
         $ADConfiguration.Sites | 
         ForEach-Object{
             it "Site $($_)" {
-                $SavedADReport.Sites.Name.Contains($_) | Should be $true
+                $ADSnapshot.Sites.Name.Contains($_) | Should be $true
             } 
         }
     }
@@ -161,13 +161,13 @@ Describe "Active Directory Operational Validation" {
         $ADConfiguration.Sitelinks | 
         ForEach-Object{
             it "Sitelink $($_.Name)" {
-                $SavedADReport.SiteLinks.Name.Contains($_.Name) | Should be $true
+                $ADSnapshot.SiteLinks.Name.Contains($_.Name) | Should be $true
             } 
             it "Sitelink $($_.Name) costs $($_.Cost)" {
-                $ADConfiguration.Sitelinks.Cost | Should be $SavedADReport.SiteLinks.Cost
+                $ADConfiguration.Sitelinks.Cost | Should be $ADSnapshot.SiteLinks.Cost
             }
             it "Sitelink $($_.Name) replication interval $($_.ReplicationFrequencyInMinutes)" {
-                $ADConfiguration.Sitelinks.ReplicationFrequencyInMinutes | Should be $SavedADReport.SiteLinks.ReplicationFrequencyInMinutes
+                $ADConfiguration.Sitelinks.ReplicationFrequencyInMinutes | Should be $ADSnapshot.SiteLinks.ReplicationFrequencyInMinutes
             }
         }
     }
@@ -176,7 +176,7 @@ Describe "Active Directory Operational Validation" {
         $ADConfiguration.Subnets | 
         ForEach-Object{
             it "Subnet $($_)" {
-                $SavedADReport.Subnets.Name.Contains($_) | Should be $true
+                $ADSnapshot.Subnets.Name.Contains($_) | Should be $true
             }
         } 
     }
