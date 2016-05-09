@@ -101,50 +101,50 @@ Describe "Active Directory Operational Validation" {
         }
         
         it "DNSRoot should be $($ExpectedConfiguration.Domain.DNSRoot)" {
-            $ExpectedConfiguration.Domain.DNSRoot | Should be $ADSnapshot.DomainInformation.DNSRoot
+            $ADSnapshot.DomainInformation.DNSRoot | Should be $ExpectedConfiguration.Domain.DNSRoot
         }
         it "NetBIOSName should be $($ExpectedConfiguration.Domain.NetBIOSName)" {
-            $ExpectedConfiguration.Domain.NetBIOSName | Should be $ADSnapshot.DomainInformation.NetBIOSName
+            $ADSnapshot.DomainInformation.NetBIOSName | Should be $ExpectedConfiguration.Domain.NetBIOSName
         }
         it "DomainMode should be $($ExpectedConfiguration.Domain.DomainMode)" {
-            $ADConfigurExpectedConfigurationation.Domain.DomainMode | Should be $ADSnapshot.DomainInformation.DomainMode.ToString()
+            $ADSnapshot.DomainInformation.DomainMode.ToString() | Should be $ExpectedConfiguration.Domain.DomainMode
         }
         it "DistinguishedName should be $($ExpectedConfiguration.Domain.DistinguishedName)" {
-            $ExpectedConfiguration.Domain.DistinguishedName | Should be $ADSnapshot.DomainInformation.DistinguishedName
+            $ADSnapshot.DomainInformation.DistinguishedName | Should be $ExpectedConfiguration.Domain.DistinguishedName
         }
         it "RIDMaster should be $($ExpectedConfiguration.Domain.RIDMaster)" {
-            $ExpectedConfiguration.Domain.RIDMaster | Should be $ADSnapshot.DomainInformation.RIDMaster
+            $ADSnapshot.DomainInformation.RIDMaster | Should be $ExpectedConfiguration.Domain.RIDMaster
         }
         it "PDCEmulator should be $($ExpectedConfiguration.Domain.PDCEmulator)" {
-            $ExpectedConfiguration.Domain.PDCEmulator | Should be $ADSnapshot.DomainInformation.PDCEmulator
+            $ADSnapshot.DomainInformation.PDCEmulator | Should be $ExpectedConfiguration.Domain.PDCEmulator
         }
         it "InfrastructureMaster should be $($ExpectedConfiguration.Domain.InfrastructureMaster)" {
-            $ExpectedConfiguration.Domain.InfrastructureMaster | Should be $ADSnapshot.DomainInformation.InfrastructureMaster
+            $ADSnapshot.DomainInformation.InfrastructureMaster | Should be $ExpectedConfiguration.Domain.InfrastructureMaster
         }
     }
     
     #FIXME BELOW:
     Context 'Verifying Default Password Policy'{
         it 'ComplexityEnabled'{
-            $ADConfiguration.PasswordPolicy.ComplexityEnabled | Should be $ADSnapshot.DefaultPassWordPoLicy.ComplexityEnabled
+            $ADSnapshot.DefaultPassWordPoLicy.ComplexityEnabled | Should be $ExpectedConfiguration.PasswordPolicy.ComplexityEnabled
         }
         it 'Password History count'{
-            $ADConfiguration.PasswordPolicy.PasswordHistoryCount | Should be $ADSnapshot.DefaultPassWordPoLicy.PasswordHistoryCount
+            $ADSnapshot.DefaultPassWordPoLicy.PasswordHistoryCount | Should be $ExpectedConfiguration.PasswordPolicy.PasswordHistoryCount
         }
-        it "Lockout Threshold equals $($ADConfiguration.PasswordPolicy.LockoutThreshold)"{
-            $ADConfiguration.PasswordPolicy.LockoutThreshold | Should be $ADSnapshot.DefaultPassWordPoLicy.LockoutThreshold
+        it "Lockout Threshold equals $($ExpectedConfiguration.PasswordPolicy.LockoutThreshold)"{
+            $ADSnapshot.DefaultPassWordPoLicy.LockoutThreshold | Should be $ExpectedConfiguration.PasswordPolicy.LockoutThreshold
         }
-        it "Lockout duration equals $($ADConfiguration.PasswordPolicy.LockoutDuration)"{
-            $ADConfiguration.PasswordPolicy.LockoutDuration | Should be $ADSnapshot.DefaultPassWordPoLicy.LockoutDuration.ToString()
+        it "Lockout duration equals $($ExpectedConfiguration.PasswordPolicy.LockoutDuration)"{
+            $ADSnapshot.DefaultPassWordPoLicy.LockoutDuration.ToString() | Should be $ExpectedConfiguration.PasswordPolicy.LockoutDuration
         }
-        it "Lockout observation window equals $($ADConfiguration.PasswordPolicy.LockoutObservationWindow)"{
-            $ADConfiguration.PasswordPolicy.LockoutObservationWindow | Should be $ADSnapshot.DefaultPassWordPoLicy.LockoutObservationWindow.ToString()
+        it "Lockout observation window equals $($ExpectedConfiguration.PasswordPolicy.LockoutObservationWindow)"{
+            $ADSnapshot.DefaultPassWordPoLicy.LockoutObservationWindow.ToString() | Should be $ExpectedConfiguration.PasswordPolicy.LockoutObservationWindow
         }
-        it "Min password age equals $($ADConfiguration.PasswordPolicy.MinPasswordAge)"{
-            $ADConfiguration.PasswordPolicy.MinPasswordAge | Should be $ADSnapshot.DefaultPassWordPoLicy.MinPasswordAge.ToString()
+        it "Min password age equals $($ExpectedConfiguration.PasswordPolicy.MinPasswordAge)"{
+            $ADSnapshot.DefaultPassWordPoLicy.MinPasswordAge.ToString() | Should be $ExpectedConfiguration.PasswordPolicy.MinPasswordAge
         }
-        it "Max password age equals $($ADConfiguration.PasswordPolicy.MaxPasswordAge)"{
-            $ADConfiguration.PasswordPolicy.MaxPasswordAge | Should be $ADSnapshot.DefaultPassWordPoLicy.MaxPasswordAge.ToString()
+        it "Max password age equals $($ExpectedConfiguration.PasswordPolicy.MaxPasswordAge)"{
+            $ADSnapshot.DefaultPassWordPoLicy.MaxPasswordAge.ToString() | Should be $ExpectedConfiguration.PasswordPolicy.MaxPasswordAge
         }
     }
 
