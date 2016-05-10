@@ -76,92 +76,75 @@ $ExpectedConfiguration = @{
 Describe "Active Directory Operational Validation" {
     Context "Forest configuration" {
         it "Forest FQDN should be $($ExpectedConfiguration.Forest.FQDN)" {
-            $ExpectedConfiguration.Forest.FQDN | Should be $ADSnapshot.ForestInformation.RootDomain
+            $ADSnapshot.ForestInformation.RootDomain | Should be $ExpectedConfiguration.Forest.FQDN
         }
         it "ForestMode should be $($ExpectedConfiguration.Forest.ForestMode)" {
-            $ExpectedConfiguration.Forest.ForestMode | Should be $ADSnapshot.ForestInformation.ForestMode.ToString()
+            $ADSnapshot.ForestInformation.ForestMode.ToString() | Should be $ExpectedConfiguration.Forest.ForestMode
         }
         it "SchemaMaster should be $($ExpectedConfiguration.Forest.SchemaMaster)" {
-            $ExpectedConfiguration.Forest.SchemaMaster | Should be $ADSnapshot.ForestInformation.SchemaMaster
+            $ADSnapshot.ForestInformation.SchemaMaster | Should be $ExpectedConfiguration.Forest.SchemaMaster
         }
         it "DomainNamingMaster should be $($ExpectedConfiguration.Forest.DomainNamingMaster)"{
-            $ExpectedConfiguration.Forest.DomainNamingMaster | Should be $ADSnapshot.ForestInformation.DomainNamingMaster
+            $ADSnapshot.ForestInformation.DomainNamingMaster | Should be $ExpectedConfiguration.Forest.DomainNamingMaster
         }
     }
     
     Context 'Verifying GlobalCatalogs' {        
-        foreach($GlobalCatalogServer in $ADSnapshot.Forest.GlobalCatalogs)
-        {
-            it "Server GlobalCatalogServer should be GlobalCatalog" {
-                $ExpectedConfiguration.ForestInformation.GlobalCatalogs.Contains($GlobalCatalogServer) | Should be $true
-            }
-        }                    
+        it "Global Catalog Servers list should match." {
+            Compare-Object $ExpectedConfiguration.Forest.GlobalCatalogs $ADSnapshot.ForestInformation.GlobalCatalogs | Should BeNullOrEmpty
+        }                   
     }
     
     Context "Verifying Domain Configuration" {
-        it "Total Domain Controllers $($ADConfiguration.Domain.DomainControllers.Count)" {
-            $ExpectedConfiguration.Domain.DomainControllers.Count | Should be @($ADSnapshot.DomainControllers).Count
-        }
-
-        $ADConfiguration.Domain.DomainControllers | 
-        ForEach-Object{
-            it "DomainController $($_) exists" {
-                $SavedADReport.DomainControllers.Name.Contains($_) | Should be $true
-            }
-        }
-        
-        foreach($DomainController in $ADSnapshot.Domain.DomainControllers)
-        {
-            it "DomainController $($_) should exists" {
-                $ExpectedConfiguration.DomainControllers.Name.Contains($DomainController) | Should be $true
-            }
+        it "List of domain controllers in the domain should be the same as the configuration list." {
+            Compare-Object $ExpectedConfiguration.Domain.DomainControllers $ADSnapshot.DomainControllers.Name | Should BeNullOrEmpty
         }
         
         it "DNSRoot should be $($ExpectedConfiguration.Domain.DNSRoot)" {
-            $ExpectedConfiguration.Domain.DNSRoot | Should be $ADSnapshot.DomainInformation.DNSRoot
+            $ADSnapshot.DomainInformation.DNSRoot | Should be $ExpectedConfiguration.Domain.DNSRoot
         }
         it "NetBIOSName should be $($ExpectedConfiguration.Domain.NetBIOSName)" {
-            $ExpectedConfiguration.Domain.NetBIOSName | Should be $ADSnapshot.DomainInformation.NetBIOSName
+            $ADSnapshot.DomainInformation.NetBIOSName | Should be $ExpectedConfiguration.Domain.NetBIOSName
         }
         it "DomainMode should be $($ExpectedConfiguration.Domain.DomainMode)" {
-            $ADConfigurExpectedConfigurationation.Domain.DomainMode | Should be $ADSnapshot.DomainInformation.DomainMode.ToString()
+            $ADSnapshot.DomainInformation.DomainMode.ToString() | Should be $ExpectedConfiguration.Domain.DomainMode
         }
         it "DistinguishedName should be $($ExpectedConfiguration.Domain.DistinguishedName)" {
-            $ExpectedConfiguration.Domain.DistinguishedName | Should be $ADSnapshot.DomainInformation.DistinguishedName
+            $ADSnapshot.DomainInformation.DistinguishedName | Should be $ExpectedConfiguration.Domain.DistinguishedName
         }
         it "RIDMaster should be $($ExpectedConfiguration.Domain.RIDMaster)" {
-            $ExpectedConfiguration.Domain.RIDMaster | Should be $ADSnapshot.DomainInformation.RIDMaster
+            $ADSnapshot.DomainInformation.RIDMaster | Should be $ExpectedConfiguration.Domain.RIDMaster
         }
         it "PDCEmulator should be $($ExpectedConfiguration.Domain.PDCEmulator)" {
-            $ExpectedConfiguration.Domain.PDCEmulator | Should be $ADSnapshot.DomainInformation.PDCEmulator
+            $ADSnapshot.DomainInformation.PDCEmulator | Should be $ExpectedConfiguration.Domain.PDCEmulator
         }
         it "InfrastructureMaster should be $($ExpectedConfiguration.Domain.InfrastructureMaster)" {
-            $ExpectedConfiguration.Domain.InfrastructureMaster | Should be $ADSnapshot.DomainInformation.InfrastructureMaster
+            $ADSnapshot.DomainInformation.InfrastructureMaster | Should be $ExpectedConfiguration.Domain.InfrastructureMaster
         }
     }
     
     #FIXME BELOW:
     Context 'Verifying Default Password Policy'{
         it 'ComplexityEnabled'{
-            $ADConfiguration.PasswordPolicy.ComplexityEnabled | Should be $SavedADReport.DefaultPassWordPoLicy.ComplexityEnabled
+            $ADSnapshot.DefaultPassWordPoLicy.ComplexityEnabled | Should be $ExpectedConfiguration.PasswordPolicy.ComplexityEnabled
         }
         it 'Password History count'{
-            $ADConfiguration.PasswordPolicy.PasswordHistoryCount | Should be $SavedADReport.DefaultPassWordPoLicy.PasswordHistoryCount
+            $ADSnapshot.DefaultPassWordPoLicy.PasswordHistoryCount | Should be $ExpectedConfiguration.PasswordPolicy.PasswordHistoryCount
         }
-        it "Lockout Threshold equals $($ADConfiguration.PasswordPolicy.LockoutThreshold)"{
-            $ADConfiguration.PasswordPolicy.LockoutThreshold | Should be $SavedADReport.DefaultPassWordPoLicy.LockoutThreshold
+        it "Lockout Threshold equals $($ExpectedConfiguration.PasswordPolicy.LockoutThreshold)"{
+            $ADSnapshot.DefaultPassWordPoLicy.LockoutThreshold | Should be $ExpectedConfiguration.PasswordPolicy.LockoutThreshold
         }
-        it "Lockout duration equals $($ADConfiguration.PasswordPolicy.LockoutDuration)"{
-            $ADConfiguration.PasswordPolicy.LockoutDuration | Should be $SavedADReport.DefaultPassWordPoLicy.LockoutDuration.ToString()
+        it "Lockout duration equals $($ExpectedConfiguration.PasswordPolicy.LockoutDuration)"{
+            $ADSnapshot.DefaultPassWordPoLicy.LockoutDuration.ToString() | Should be $ExpectedConfiguration.PasswordPolicy.LockoutDuration
         }
-        it "Lockout observation window equals $($ADConfiguration.PasswordPolicy.LockoutObservationWindow)"{
-            $ADConfiguration.PasswordPolicy.LockoutObservationWindow | Should be $SavedADReport.DefaultPassWordPoLicy.LockoutObservationWindow.ToString()
+        it "Lockout observation window equals $($ExpectedConfiguration.PasswordPolicy.LockoutObservationWindow)"{
+            $ADSnapshot.DefaultPassWordPoLicy.LockoutObservationWindow.ToString() | Should be $ExpectedConfiguration.PasswordPolicy.LockoutObservationWindow
         }
-        it "Min password age equals $($ADConfiguration.PasswordPolicy.MinPasswordAge)"{
-            $ADConfiguration.PasswordPolicy.MinPasswordAge | Should be $SavedADReport.DefaultPassWordPoLicy.MinPasswordAge.ToString()
+        it "Min password age equals $($ExpectedConfiguration.PasswordPolicy.MinPasswordAge)"{
+            $ADSnapshot.DefaultPassWordPoLicy.MinPasswordAge.ToString() | Should be $ExpectedConfiguration.PasswordPolicy.MinPasswordAge
         }
-        it "Max password age equals $($ADConfiguration.PasswordPolicy.MaxPasswordAge)"{
-            $ADConfiguration.PasswordPolicy.MaxPasswordAge | Should be $SavedADReport.DefaultPassWordPoLicy.MaxPasswordAge.ToString()
+        it "Max password age equals $($ExpectedConfiguration.PasswordPolicy.MaxPasswordAge)"{
+            $ADSnapshot.DefaultPassWordPoLicy.MaxPasswordAge.ToString() | Should be $ExpectedConfiguration.PasswordPolicy.MaxPasswordAge
         }
     }
 
@@ -169,7 +152,7 @@ Describe "Active Directory Operational Validation" {
         $ADConfiguration.Sites | 
         ForEach-Object{
             it "Site $($_)" {
-                $SavedADReport.Sites.Name.Contains($_) | Should be $true
+                $ADSnapshot.Sites.Name.Contains($_) | Should be $true
             } 
         }
     }
@@ -178,13 +161,13 @@ Describe "Active Directory Operational Validation" {
         $ADConfiguration.Sitelinks | 
         ForEach-Object{
             it "Sitelink $($_.Name)" {
-                $SavedADReport.SiteLinks.Name.Contains($_.Name) | Should be $true
+                $ADSnapshot.SiteLinks.Name.Contains($_.Name) | Should be $true
             } 
             it "Sitelink $($_.Name) costs $($_.Cost)" {
-                $ADConfiguration.Sitelinks.Cost | Should be $SavedADReport.SiteLinks.Cost
+                $ADConfiguration.Sitelinks.Cost | Should be $ADSnapshot.SiteLinks.Cost
             }
             it "Sitelink $($_.Name) replication interval $($_.ReplicationFrequencyInMinutes)" {
-                $ADConfiguration.Sitelinks.ReplicationFrequencyInMinutes | Should be $SavedADReport.SiteLinks.ReplicationFrequencyInMinutes
+                $ADConfiguration.Sitelinks.ReplicationFrequencyInMinutes | Should be $ADSnapshot.SiteLinks.ReplicationFrequencyInMinutes
             }
         }
     }
@@ -193,7 +176,7 @@ Describe "Active Directory Operational Validation" {
         $ADConfiguration.Subnets | 
         ForEach-Object{
             it "Subnet $($_)" {
-                $SavedADReport.Subnets.Name.Contains($_) | Should be $true
+                $ADSnapshot.Subnets.Name.Contains($_) | Should be $true
             }
         } 
     }
