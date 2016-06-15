@@ -2,7 +2,7 @@ Import-Module -Name ActiveDirectory -ErrorAction Stop
 
 # ADsnapshot created by 
 # Author: I. Strachan (@IrwinStrachan)
-# https://gist.github.com/irwins/f0e27525e72cb19f13ec/
+# https://gist.github.com/irwins/f0e27525e72cb19f13ec/ 
 
 $ADSnapshot = @{}
 
