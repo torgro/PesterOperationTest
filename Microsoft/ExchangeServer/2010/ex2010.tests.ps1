@@ -63,8 +63,8 @@ Describe "Exchange 2010 - Mail Box Servers - Operational Validation" {
                 Test-ServiceHealth -Server $mailBoxServer | Should be $true
             }
         }
-	}
-	Context "In Depth Tests" {
+    }
+    Context "In Depth Tests" {
         Get-DatabaseAvailabilityGroup | Select -ExpandProperty:Servers | Test-ReplicationHealth | ForEach-Object {
             it "DAG Member $($_.server.toString()) - $($_.check.toString())" {
                 $_.result | Should be "Passed"
@@ -124,6 +124,7 @@ Describe "Exchange 2010 - Client Access Servers - Operational Validation" {
         }  
     }
 }
+
 Describe "Exchange 2010 - Hub Transport Servers - Operational Validation" {
     Context "General Tests" {
         it "Hub Transport Servers - Count Should Be - $($expectedConfig.hubTransportServers.servers.Count)" {
@@ -144,8 +145,8 @@ Describe "Exchange 2010 - Hub Transport Servers - Operational Validation" {
                 Test-ServiceHealth -Server $hubServer | Should be $true
             }
         }
-	}
-	Context "In Depth Tests" {
+    }
+    Context "In Depth Tests" {
         $currentConfig.hubTransportServers.servers | Get-Queue | ForEach-Object {
             it "Hub Transport Server $($_.identity) queue being tested" {
                 $queue = $false
