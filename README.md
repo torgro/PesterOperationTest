@@ -16,6 +16,10 @@ Currently there are tests for:
 
 * Identity Manager (FIM/MIM)
 * Active Directory
+* ExchangeServer
+* Hyper-V
+* Powershell Style Check
+* Virtual Machine Manager (VMM)
 
 They are all work in progress, however they should work!
 
@@ -31,7 +35,7 @@ Yes, have plans for:
 * HyperV
 * ESX/VMWare
 * Citrix
-
+* Veeam
 
 Cheers
 
